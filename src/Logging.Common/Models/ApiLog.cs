@@ -11,6 +11,6 @@
         public byte[] Request { get; set; } //new Payload(LoggingMiddlewareUtility.GetResponsePayloadBytes(httpContext))
         public byte[] Response { get; set; }
         public string Url { get; set; }
-        public string TimeTakenInms { get; set; }
+        public long TimeTakenInms { get; set; }
     }
 }

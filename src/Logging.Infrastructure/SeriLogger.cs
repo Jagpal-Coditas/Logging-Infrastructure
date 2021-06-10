@@ -5,7 +5,7 @@ using Serilog.Core;
 using Serilog.Events;
 using System;
 
-namespace Logging.Common
+namespace Logging.Infrastructure
 {
     public sealed class SeriLogger
     {
@@ -17,14 +17,11 @@ namespace Logging.Common
                 level = LogEventLevel.Information;
             }
 
-            //var basePath = Path.GetFullPath(serilogOptions.LogFilePath + "/" + serilogOptions.AppName);
-            //if (!Directory.Exists(basePath))
-            //    Directory.CreateDirectory(basePath);
-            //var file = File.CreateText(basePath + "/failures.txt");
-            //SelfLog.Enable(TextWriter.Synchronized(file));
+            this.LoggerConfiguration = new LoggerConfiguration()
+                .Enrich.WithProperty(Common.Constants.ENVIRONMENT, serilogOptions.Environment)
+                .Enrich.WithProperty(Common.Constants.APPLICATIONNAME, serilogOptions.AppName)
+                .Enrich.With(new LogContextEnricher(serilogOptions.GetLoggerContext())).WriteTo.Sink(logEventSink, level);
 
-            this.LoggerConfiguration = new LoggerConfiguration().WriteTo.Sink(logEventSink, level);
-            
         }
         public LoggerConfiguration LoggerConfiguration { get; private set; }
     }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Logging.Common.Models;
+using System.Collections.Generic;
 
 namespace Logging.Common
 {
@@ -8,7 +8,7 @@ namespace Logging.Common
     /// </summary>
     public interface ILoggerContext
     {
-        void Set(string key, string value);
-        IDictionary<string, string> GetAll();
+        void Set(LogContextProperty prop);
+        IEnumerable<LogContextProperty> Get(bool IsMiddlewareLogging = false);
     }
 }

@@ -15,18 +15,18 @@ namespace Logging.Common.Enrichers
         }
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            LogEventPropertyValue logEventPropertyValue;
+            bool isLoggedFromMiddleware = false;
             if (logEvent.Properties.ContainsKey("IsLoggedFromMiddleware"))
             {
+                LogEventPropertyValue logEventPropertyValue;
                 logEvent.Properties.TryGetValue("IsLoggedFromMiddleware", out logEventPropertyValue);
                 var propScalarValue = logEventPropertyValue as ScalarValue;
-                if (Convert.ToBoolean(propScalarValue.Value))
-                {
-                    foreach (var keyValue in _loggerContext.GetAll())
-                    {
-                        logEvent.AddOrUpdateProperty(new LogEventProperty(keyValue.Key, new ScalarValue(keyValue.Value)));
-                    }
-                }
+                isLoggedFromMiddleware = Convert.ToBoolean(propScalarValue.Value);
+            }
+
+            foreach (var keyValue in _loggerContext.Get(isLoggedFromMiddleware))
+            {
+                logEvent.AddOrUpdateProperty(new LogEventProperty(keyValue.Key, new ScalarValue(keyValue.Value)));
             }
         }
     }
