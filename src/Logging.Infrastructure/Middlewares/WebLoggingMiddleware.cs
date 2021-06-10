@@ -9,37 +9,23 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace Logging.Infrastructure.Middlewares
 {
-    public class WebLoggingMiddleware : DelegatingHandler
+    public class WebLoggingMiddleware : BaseWebLoggingMiddleware
     {
         private readonly ILoggerContext _loggerContext;
         private readonly ILogger _logger;
         private readonly Func<Dictionary<string, Tuple<string, string>>> _getRouteMapper;
 
         public WebLoggingMiddleware(ILoggerContext loggerContext, ILogger logger, Func<Dictionary<string, Tuple<string, string>>> getRouteMapper)
+            : base(loggerContext, logger)
         {
-            if (loggerContext == null)
-                throw new ArgumentNullException(typeof(ILoggerContext).FullName);
-
-            if (logger == null)
-                throw new ArgumentNullException(typeof(ILogger).FullName);
-
-            _loggerContext = loggerContext;
-            _logger = logger;
             _getRouteMapper = getRouteMapper;
         }
-        protected async override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
-            var correlationId = LoggingHelper.GetHeaderIfPresent(request.Headers, Constants.HttpHeaders.CORRELATIONIDHEADER);
-            if (string.IsNullOrWhiteSpace(correlationId))
-            {
-                correlationId = Guid.NewGuid().ToString();
-                request.Headers.Add(Constants.HttpHeaders.CORRELATIONIDHEADER, correlationId);
-            }
 
-            _loggerContext.Set(LogContextProperty.Create(Constants.CORRELATIONID, correlationId, true));
+        protected override Task<ApiLog> GetLog(HttpRequestMessage request, HttpResponseMessage response)
+        {
+            _loggerContext.Set(LogContextProperty.Create(Constants.CORRELATIONID,
+                LoggingHelper.GetHeaderIfPresent(request.Headers, Constants.HttpHeaders.CORRELATIONIDHEADER),
+                true));
             _loggerContext.Set(LogContextProperty.Create(Constants.HOST, request.Headers.Host));
             _loggerContext.Set(LogContextProperty.Create(Constants.SCHEME, request.RequestUri.Scheme));
             _loggerContext.Set(LogContextProperty.Create(Constants.HTTPMETHOD, request.Method.Method));
@@ -50,53 +36,26 @@ namespace Logging.Infrastructure.Middlewares
                 _loggerContext.Set(LogContextProperty.Create(Constants.QUERYSTRING, request.RequestUri.Query));
             }
 
-            HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
-
-            try
-            {
-                response = await base.SendAsync(request, cancellationToken);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(new EventId(), exception, exception.Message);
-            }
-            finally
-            {
-                stopWatch.Stop();
-                var apiLog = await GetApiLog(request, response, stopWatch);
-                _logger.LogInformation("Request Executed", apiLog);
-                if (response.Headers.Contains(Constants.HttpHeaders.CORRELATIONIDHEADER) == false)
-                    response.Headers.Add(Constants.HttpHeaders.CORRELATIONIDHEADER, correlationId);
-
-            }
-            return response;
+            return GetApiLog(request, response);
         }
 
-        private async Task<ApiLog> GetApiLog(HttpRequestMessage request, HttpResponseMessage response, Stopwatch stopWatch)
+        protected override bool ShouldLog(HttpRequestMessage request, HttpResponseMessage response)
         {
-            if (stopWatch.IsRunning)
-                stopWatch.Stop();
+            return true;
+        }
+
+        private async Task<ApiLog> GetApiLog(HttpRequestMessage request, HttpResponseMessage response)
+        {
 
             var apiLog = new ApiLog()
             {
                 Api = "",
                 Verb = "",
-                ApplicationName = "",
                 ClientIp = "",
-                CorrelationId = "",
                 IsSuccessful = response.StatusCode == System.Net.HttpStatusCode.OK,
-                Url = "",
-                LogTime = DateTime.UtcNow,
-                TimeTakenInms = stopWatch.ElapsedMilliseconds
+                Url = ""
             };
-            var requestData = await request.Content.ReadAsByteArrayAsync();
 
-            var responseData = await response.Content.ReadAsByteArrayAsync();
-
-            if (requestData.Length > 0)
-                apiLog.Request = requestData;
-            if (responseData.Length > 0)
-                apiLog.Response = responseData;
             return apiLog;
         }
 
