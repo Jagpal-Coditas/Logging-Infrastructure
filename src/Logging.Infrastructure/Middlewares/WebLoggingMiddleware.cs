@@ -1,4 +1,5 @@
 ﻿using Logging.Common;
+using Logging.Common.Models;
 using System;
 using System.Diagnostics;
 using System.Net.Http;
@@ -49,7 +50,6 @@ namespace Logging.Infrastructure.Middlewares
 
         private void Log(HttpRequestMessage request, HttpResponseMessage response)
         {
-           
         }
 
     }

@@ -31,7 +31,6 @@ namespace Logging.Common
             }
             return string.Empty;
         }
-
     }
 
 }
