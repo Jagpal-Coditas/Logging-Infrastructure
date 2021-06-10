@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Logging.Common\Logging.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+
 </Project>

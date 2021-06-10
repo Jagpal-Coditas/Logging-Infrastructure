@@ -1,6 +1,4 @@
 ﻿using Logging.Common;
-using Logging.Common.Models;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -47,16 +45,9 @@ namespace Logging.Infrastructure.Middlewares
         private async Task<ApiLog> GetApiLog(HttpRequestMessage request, HttpResponseMessage response)
         {
 
-            var apiLog = new ApiLog()
-            {
-                Api = "",
-                Verb = "",
-                ClientIp = "",
-                IsSuccessful = response.StatusCode == System.Net.HttpStatusCode.OK,
-                Url = ""
-            };
-
-            return apiLog;
+        private void Log(HttpRequestMessage request, HttpResponseMessage response)
+        {
+           
         }
 
     }
