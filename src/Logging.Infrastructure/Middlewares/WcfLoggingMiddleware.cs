@@ -2,6 +2,7 @@
 using Logging.Infrastructure.Helpers;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
@@ -17,16 +18,6 @@ namespace Logging.Infrastructure.Middlewares
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var firstHeader = request.Headers[0];
-            var ns = firstHeader.Namespace;
-
-            string correlationId = GetCorrelationIdFromHeader(request, ns);
-            if (string.IsNullOrWhiteSpace(correlationId))
-            {
-                correlationId = Guid.NewGuid().ToString();
-                MessageHeader correlationHeader = GetCorrelationHeader(ns, correlationId);
-                request.Headers.Add(correlationHeader);
-            }
 
             return new Tuple<Message, Stopwatch>(request, stopWatch);
         }
@@ -36,27 +27,25 @@ namespace Logging.Infrastructure.Middlewares
             var correlationParams = correlationState as Tuple<Message, Stopwatch>;
             var request = correlationParams.Item1;
             var stopWatch = correlationParams.Item2;
-            var ns = string.Empty;
 
             stopWatch.Stop();
             Log(request, response);
-            if (string.IsNullOrEmpty(GetCorrelationIdFromHeader(response, ns)))
-                response.Headers.Add(GetCorrelationHeader(ns, Guid.NewGuid().ToString()));
         }
 
         private void Log(Message request, Message response)
         {
+
+            var requestContent = request.GetBody<string>();
+            var responseContent = response.GetBody<string>();
+
+            using (StreamWriter requestFile = new StreamWriter("Requests.txt"),
+                responseFile = new StreamWriter("Response.txt"))
+            {
+                requestFile.WriteLine(requestContent);
+                responseFile.WriteLine(responseContent);
+            }
+
             // Log the request/response
-        }
-
-        private string GetCorrelationIdFromHeader(Message request, string ns)
-        {
-            return HeaderHelper.GetHeaderIfPresent(request.Headers, ns, Constants.HttpHeaders.CORRELATIONIDHEADER);
-        }
-
-        private MessageHeader GetCorrelationHeader(string ns, string correlationId)
-        {
-            return MessageHeader.CreateHeader(Constants.HttpHeaders.CORRELATIONIDHEADER, ns, correlationId);
         }
     }
 }
