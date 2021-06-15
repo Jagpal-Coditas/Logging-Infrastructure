@@ -1,4 +1,4 @@
-﻿namespace Logging.Common.Models
+﻿namespace Logging.Common
 {
     public class LogContextProperty
     {

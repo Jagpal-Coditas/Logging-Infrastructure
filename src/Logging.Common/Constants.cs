@@ -16,7 +16,5 @@
         public const string QUERYSTRING = "querystring";
         public const string RESPONSEBODY = "response_body";
         public const string CONTENTTYPE = "content_type";
-        public const string ENVIRONMENT = "environment";
-        public const string APPLICATIONNAME = "app_name";
     }
 }

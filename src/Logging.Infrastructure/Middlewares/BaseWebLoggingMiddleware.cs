@@ -1,8 +1,6 @@
 ﻿using Logging.Common;
-using Logging.Common.Models;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
@@ -12,7 +10,6 @@ namespace Logging.Infrastructure.Middlewares
 {
     public abstract class BaseWebLoggingMiddleware : DelegatingHandler
     {
-        private readonly ILoggerContext _loggerContext;
         private readonly ILogger _logger;
         public BaseWebLoggingMiddleware(ILoggerContext loggerContext, ILogger logger)
         {
@@ -22,9 +19,11 @@ namespace Logging.Infrastructure.Middlewares
             if (logger == null)
                 throw new ArgumentNullException(typeof(ILogger).FullName);
 
-            _loggerContext = loggerContext;
+            LoggerContext = loggerContext;
             _logger = logger;
+            _logger.LogInformation("First Log");
         }
+        protected ILoggerContext LoggerContext { get; }
         protected async override Task<HttpResponseMessage> SendAsync(
            HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -56,7 +55,6 @@ namespace Logging.Infrastructure.Middlewares
                 stopWatch.Stop();
 
             var apiLogEntry = await GetLog(request, response);
-            apiLogEntry.LogTime = DateTime.UtcNow;
             apiLogEntry.TimeTakenInms = stopWatch.ElapsedMilliseconds;
 
             _logger.LogInformation("Request Executed", apiLogEntry);

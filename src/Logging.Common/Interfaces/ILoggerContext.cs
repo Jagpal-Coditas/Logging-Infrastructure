@@ -1,5 +1,4 @@
-﻿using Logging.Common.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Logging.Common
 {
