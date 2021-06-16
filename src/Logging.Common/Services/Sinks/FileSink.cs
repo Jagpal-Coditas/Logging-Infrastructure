@@ -15,7 +15,7 @@ namespace Logging.Common
         }
         public bool IsFailOverSink { get; set; }
 
-        public void Send(LogEvent logEvent)
+        public void Push(LogEvent logEvent)
         {
             var logString = JsonConvert.SerializeObject(logEvent);
 

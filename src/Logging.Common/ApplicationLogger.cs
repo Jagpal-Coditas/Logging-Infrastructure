@@ -39,7 +39,7 @@ namespace Logging.Common
                 var logSinks = _loggerProvider.Options.Sink.Where(s => s.IsFailOverSink == false);
                 foreach (var logSink in logSinks)
                 {
-                    logSink.Send(logEvent);
+                    logSink.Push(logEvent);
                 }
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace Logging.Common
                 var failOverSink = _loggerProvider.Options.Sink.Where(s => s.IsFailOverSink).FirstOrDefault();
                 if (failOverSink != null)
                 {
-                    failOverSink.Send(logEvent);
+                    failOverSink.Push(logEvent);
                 }
             }
 

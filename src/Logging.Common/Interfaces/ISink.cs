@@ -1,8 +1,12 @@
-﻿namespace Logging.Common
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Logging.Common
 {
-    public interface ISink
+    public interface ISink<T>
     {
         bool IsFailOverSink { get; set; }
-        void Send(LogEvent logEvent);
+        bool Push(LogEvent logEvent);
+        Task<bool> PushToStore(T logBatch);
     }
 }
