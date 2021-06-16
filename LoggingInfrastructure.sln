@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging.Common", "src\Loggi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging.Infrastructure", "src\Logging.Infrastructure\Logging.Infrastructure.csproj", "{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWithDotnetFramework", "TestWithDotnetFramework\TestWithDotnetFramework.csproj", "{BC840D05-D2FC-4399-B816-3F8563DA8D3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Net45", "src\Logging.Net45\Logging.Net45.csproj", "{7D90F500-8F89-4962-8B4A-EAAC01F6A380}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

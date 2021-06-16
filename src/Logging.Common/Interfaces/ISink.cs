@@ -2,7 +2,8 @@
 {
     public interface ISink
     {
-        bool IsFailOverSink { get; set; }
+        ISink FailOverSink { get; }
+        ILogEventFormatter LogFormatter{get;}
         void Send(LogEvent logEvent);
     }
 }
