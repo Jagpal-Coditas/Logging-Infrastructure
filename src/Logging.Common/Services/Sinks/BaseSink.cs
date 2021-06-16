@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Logging.Common.Services
 {
-    public abstract class BaseSink<T> : ISink<T>
+    public abstract class BaseSink : ISink
     {
-        private readonly ILogEventPushHandler<T> _logEventPushHander;
+        private readonly ILogEventPushHandler _logEventPushHander;
 
-        public BaseSink(ILogEventPushHandler<T> logEventPushHandler)
+        public BaseSink(ILogEventPushHandler logEventPushHandler)
         {
             _logEventPushHander = logEventPushHandler;
         }
@@ -19,6 +19,12 @@ namespace Logging.Common.Services
             return _logEventPushHander.AddOrPush(logEvent, PushToStore);
         }
 
-        public abstract Task<bool> PushToStore(T logBatch);
+        public Task<bool> PushToStore(LogEvent logBatch)
+        {
+        }
+
+        public Task<bool> PushToStore(IEnumerable<LogEvent> logBatch)
+        {
+        }
     }
 }

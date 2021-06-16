@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Logging.Common.Services
 {
-    public class PeriodicPushHandler : ILogEventPushHandler<IEnumerable<LogEvent>>
+    public class PeriodicPushHandler : ILogEventPushHandler
     {
         private const int DEFAULT_BLOCKING_COLLECTION_SIZE = int.MaxValue;
         private const int MAX_QUEUE_BLOCK_TIME_IN_MS = 100;
@@ -29,23 +29,23 @@ namespace Logging.Common.Services
             }
         }
 
-        public bool AddOrPush(LogEvent logEvent, Func<IEnumerable<LogEvent>, bool> pushToStore)
+        public bool AddOrPush(LogEvent logEvent, Func<LogEvent, bool> pushToStore, Func<IEnumerable<LogEvent>, bool> bulkPushToStore)
         {
             var isSuccessfull = Queue.TryAdd(logEvent, MAX_QUEUE_BLOCK_TIME_IN_MS);
 
             if (isSuccessfull == false)
             {
-                return HandleFailure(logEvent, pushToStore);
+                return HandleFailure(logEvent, pushToStore, bulkPushToStore);
             }
 
             if (_isTaskScheduled == false)
             {
-                SchedulePushTask(pushToStore);
+                SchedulePushTask(pushToStore, bulkPushToStore);
             }
             return isSuccessfull;
         }
 
-        private void SchedulePushTask(Func<IEnumerable<LogEvent>, bool> pushToStore)
+        private void SchedulePushTask(Func<LogEvent, bool> pushToStore, Func<IEnumerable<LogEvent>, bool> bulkPushToStore)
         {
             Task.Run(async () => await PushQueueToStore(Queue, pushToStore, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
             _isTaskScheduled = true;
@@ -67,7 +67,7 @@ namespace Logging.Common.Services
             }
         }
 
-        private bool HandleFailure(LogEvent logEvent, Func<IEnumerable<LogEvent>, bool> pushToStore)
+        private bool HandleFailure(LogEvent logEvent, Func<LogEvent, bool> pushToStore1, Func<IEnumerable<LogEvent>, bool> pushToStore)
         {
             // Retry push
             // return false if failed or return true

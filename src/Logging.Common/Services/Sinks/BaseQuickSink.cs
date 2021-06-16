@@ -1,8 +1,8 @@
 ﻿namespace Logging.Common.Services.Sinks
 {
-    public abstract class BaseQuickSink : BaseSink<LogEvent>
+    public abstract class BaseQuickSink : BaseSink
     {
-        public BaseQuickSink(ILogEventPushHandler<LogEvent> logEventPushHandler) : base(logEventPushHandler)
+        public BaseQuickSink(ILogEventPushHandler logEventPushHandler) : base(logEventPushHandler)
         {
         }
     }
