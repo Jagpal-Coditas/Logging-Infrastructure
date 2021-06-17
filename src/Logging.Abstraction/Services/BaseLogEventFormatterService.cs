@@ -1,16 +1,18 @@
-﻿namespace Logging.Common
+﻿using Logging.Abstraction.Models;
+
+namespace Logging.Abstraction.Services
 {
-    public abstract class BaseLogEventFormatter : ILogEventFormatter
+    public abstract class BaseLogEventFormatterService : ILogEventFormatterService
     {
-        public BaseLogEventFormatter()
+        public BaseLogEventFormatterService()
         {
 
         }
-        public BaseLogEventFormatter(ILogEventFormatter logEventFormatter)
+        public BaseLogEventFormatterService(ILogEventFormatterService logEventFormatter)
         {
             NextFormatter = logEventFormatter;
         }
-        public ILogEventFormatter NextFormatter { get;}
+        public ILogEventFormatterService NextFormatter { get;}
         public LogEvent Format(LogEvent logEvent)
         {
             if (logEvent == null || logEvent.Properties == null)

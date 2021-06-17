@@ -258,13 +258,13 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Logging.Common\Logging.Common.csproj">
-      <Project>{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}</Project>
-      <Name>Logging.Common</Name>
+    <ProjectReference Include="..\src\Logging.Abstraction\Logging.Abstraction.csproj">
+      <Project>{3a73674c-be9e-4686-bd34-9fed57b187c5}</Project>
+      <Name>Logging.Abstraction</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Logging.Net45\Logging.Net45.csproj">
-      <Project>{7d90f500-8f89-4962-8b4a-eaac01f6a380}</Project>
-      <Name>Logging.Net45</Name>
+    <ProjectReference Include="..\src\Logging.Common\Logging.Common.csproj">
+      <Project>{392c2ffa-621d-4c9a-85b0-0cba9dbbd4db}</Project>
+      <Name>Logging.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

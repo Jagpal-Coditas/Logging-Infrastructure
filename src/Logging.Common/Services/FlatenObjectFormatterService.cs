@@ -1,16 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace Logging.Common
+namespace Logging.Common.Services
 {
-    public class FlatenObjectFormatter : BaseLogEventFormatter
+    public class FlatenObjectFormatterService : BaseLogEventFormatterService
     {
-        public FlatenObjectFormatter()
+        public FlatenObjectFormatterService()
         {
 
         }
-        public FlatenObjectFormatter(ILogEventFormatter logEventFormatter) : base(logEventFormatter)
+        public FlatenObjectFormatterService(ILogEventFormatterService logEventFormatter) : base(logEventFormatter)
         {
         }
         protected override LogEvent DoFormatting(LogEvent logEvent)

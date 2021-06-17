@@ -100,8 +100,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configurations\IGoogleCloudLoggingSinkOptions.cs" />
-    <Compile Include="Configurations\GoogleCloudLoggingSinkOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sinks\GoogleCloudLoggingSink.cs" />
   </ItemGroup>

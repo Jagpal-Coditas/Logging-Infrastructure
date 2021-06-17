@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Logging.Abstraction.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Logging.Common
+namespace Logging.Common.Services
 {
-    internal class ApplicationLogger : ILogger
+    internal class ApplicationLoggerService : ILogger
     {
-        private readonly ApplicationLoggerProvider _loggerProvider;
+        private readonly ApplicationLoggerProviderService _loggerProvider;
         private readonly string _sourceContext;
-        public ApplicationLogger(ApplicationLoggerProvider loggerProvider, string categoryName)
+        public ApplicationLoggerService(ApplicationLoggerProviderService loggerProvider, string categoryName)
         {
             _loggerProvider = loggerProvider;
             _sourceContext = categoryName;
@@ -33,7 +34,7 @@ namespace Logging.Common
             var logEvent = GetLogEvent(logLevel, eventId, state, exception, formatter);
             foreach (var logSink in _loggerProvider.Options.Sink)
             {
-                logSink.Push(logEvent);
+                logSink.Send(logEvent);
             }
 
         }
@@ -49,7 +50,7 @@ namespace Logging.Common
             {
                 foreach (var property in structure)
                 {
-                    if (property.Key == ApplicationLoggerProvider.OriginalFormatPropertyName && property.Value is string value)
+                    if (property.Key == ApplicationLoggerProviderService.OriginalFormatPropertyName && property.Value is string value)
                     {
                         messageTemplate = value;
                     }

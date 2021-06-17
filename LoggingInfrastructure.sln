@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging.Infrastructure", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWithDotnetFramework", "TestWithDotnetFramework\TestWithDotnetFramework.csproj", "{BC840D05-D2FC-4399-B816-3F8563DA8D3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Net45", "src\Logging.Net45\Logging.Net45.csproj", "{7D90F500-8F89-4962-8B4A-EAAC01F6A380}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Abstraction", "src\Logging.Abstraction\Logging.Abstraction.csproj", "{3A73674C-BE9E-4686-BD34-9FED57B187C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC840D05-D2FC-4399-B816-3F8563DA8D3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D90F500-8F89-4962-8B4A-EAAC01F6A380}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A73674C-BE9E-4686-BD34-9FED57B187C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A73674C-BE9E-4686-BD34-9FED57B187C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A73674C-BE9E-4686-BD34-9FED57B187C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A73674C-BE9E-4686-BD34-9FED57B187C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

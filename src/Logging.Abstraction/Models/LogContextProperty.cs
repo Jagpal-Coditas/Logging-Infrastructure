@@ -1,4 +1,4 @@
-﻿namespace Logging.Common
+﻿namespace Logging.Abstraction.Models
 {
     public class LogContextProperty
     {

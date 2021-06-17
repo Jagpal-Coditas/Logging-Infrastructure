@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,12 +8,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Logging.Common.Services
+namespace Logging.Abstraction.Services
 {
-    public abstract class BasePeriodicPushSink : BaseSink, ISink
+    public abstract class BasePeriodicPushSink : ISinkService
     {
-        private readonly ISink _innerSink;
-
         private const int DEFAULT_BLOCKING_COLLECTION_SIZE = int.MaxValue;
         private const int MAX_QUEUE_BLOCK_TIME_IN_MS = 100;
         private const int LOOP_TIME_IN_MS = 1000;
@@ -20,15 +20,14 @@ namespace Logging.Common.Services
         private bool _isTaskScheduled = false;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        //public BasePeriodicPushSink(ISink innerSink)
-        //{
-        //    _innerSink = innerSink;
-        //}
-
-        public BasePeriodicPushSink()
+        public BasePeriodicPushSink(ISinkService failOverSink, ILogEventFormatterService logEventFormatterService)
         {
-            _innerSink = null;
+            FailOverSink = failOverSink;
+            LogFormatter = logEventFormatterService;
         }
+
+        public ISinkService FailOverSink { get; }
+        public ILogEventFormatterService LogFormatter { get; }
 
         public virtual BlockingCollection<LogEvent> Queue
         {
@@ -42,23 +41,7 @@ namespace Logging.Common.Services
             }
         }
 
-        public override bool IsFailOverSink //TODO : remove
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public override bool IsPrioritySink
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        protected override void HandleLogEvent(LogEvent logEvent)
+        public void Send(LogEvent logEvent)
         {
             var isSuccessfull = Queue.TryAdd(logEvent, MAX_QUEUE_BLOCK_TIME_IN_MS);
 
@@ -73,10 +56,12 @@ namespace Logging.Common.Services
             }
         }
 
+        protected abstract void PushToStore(IEnumerable<LogEvent> logBatch);
+
         private void HandleFailure(LogEvent logEvent)
         {
             //Step 1: Force push to Store
-            PushQueueToStore(Queue, PushToStore, _innerSink);
+            PushQueueToStore();
 
             //Step 2 : Retry enqueueing the log
             var isSuccessfull = Queue.TryAdd(logEvent, MAX_QUEUE_BLOCK_TIME_IN_MS);
@@ -84,50 +69,50 @@ namespace Logging.Common.Services
             //Step 3 : In case of failure add critical failure to fail over slink
             if (isSuccessfull == false)
             {
-                _innerSink.Push(logEvent);
-                _innerSink.Push(GetQueueStatsLog(Queue.Count, logEvent));
+                FailOverSink.Send(logEvent);
+                FailOverSink.Send(GetQueueStatsLog(Queue.Count, logEvent));
             }
         }
 
         private void SchedulePushTask()
         {
-            Task.Run(async () => await PushQueueToStoreAsync(Queue, PushToStore, _innerSink, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
+            Task.Run(async () => await PushQueueToStoreAsync(), _cancellationTokenSource.Token);
             _isTaskScheduled = true;
         }
 
-        private async Task PushQueueToStoreAsync(BlockingCollection<LogEvent> queue, Action<IEnumerable<LogEvent>> pushToStore, ISink _innerSink, CancellationToken cancellationToken)
+        private async Task PushQueueToStoreAsync()
         {
             while (true)
             {
                 await Task.Delay(LOOP_TIME_IN_MS); // Internally handled by using Timer which is optimal than Thread.Sleep.
-                if (cancellationToken.IsCancellationRequested)
+                if (_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     return;
                 }
-                PushQueueToStore(queue, pushToStore, _innerSink);
+                PushQueueToStore();
             }
         }
 
-        private void PushQueueToStore(BlockingCollection<LogEvent> queue, Action<IEnumerable<LogEvent>> pushToStore, ISink _innerSink)
+        private void PushQueueToStore()
         {
-            if (queue.Count < 1)
+            if (Queue.Count < 1)
             {
                 return;
             }
 
             var logBatch = new List<LogEvent>();
-            while (queue.Count != 0)
+            while (Queue.Count != 0)
             {
-                logBatch.Add(queue.Take());
+                logBatch.Add(Queue.Take());
             }
 
             try
             {
-                pushToStore(logBatch);
+                PushToStore(logBatch);
             }
             catch (Exception e)
             {
-                var queueInUse = queue.Count / queue.BoundedCapacity * 100;
+                var queueInUse = Queue.Count / Queue.BoundedCapacity * 100;
                 // add this to log
                 // add exception to log
                 var referenceLog = logBatch.First();
@@ -140,7 +125,7 @@ namespace Logging.Common.Services
 
                 foreach (var log in logBatch)
                 {
-                    _innerSink.Push(log);
+                    FailOverSink.Send(log);
                 }
             }
         }

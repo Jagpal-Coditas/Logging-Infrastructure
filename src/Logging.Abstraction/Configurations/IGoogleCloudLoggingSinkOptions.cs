@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Logging.Net45
+namespace Logging.Abstraction.Configuration
 {
     public interface IGoogleCloudLoggingSinkOptions
     {

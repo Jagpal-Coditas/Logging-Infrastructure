@@ -1,10 +1,12 @@
-﻿using System.Collections.Concurrent;
+﻿using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Logging.Common
+namespace Logging.Common.Services
 {
-    public class LoggerContext : ILoggerContext
+    public class LoggerContextService : ILoggerContextService
     {
         private readonly ConcurrentBag<LogContextProperty> _loggingData = new ConcurrentBag<LogContextProperty>();
 
