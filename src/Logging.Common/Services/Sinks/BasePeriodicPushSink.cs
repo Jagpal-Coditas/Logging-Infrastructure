@@ -66,6 +66,11 @@ namespace Logging.Common.Services
             {
                 HandleFailure(logEvent);
             }
+
+            if (_isTaskScheduled == false)
+            {
+                SchedulePushTask();
+            }
         }
 
         private void HandleFailure(LogEvent logEvent)
@@ -81,11 +86,6 @@ namespace Logging.Common.Services
             {
                 _innerSink.Push(logEvent);
                 _innerSink.Push(GetQueueStatsLog(Queue.Count, logEvent));
-            }
-
-            if (_isTaskScheduled == false)
-            {
-                SchedulePushTask();
             }
         }
 
@@ -110,11 +110,15 @@ namespace Logging.Common.Services
 
         private void PushQueueToStore(BlockingCollection<LogEvent> queue, Action<IEnumerable<LogEvent>> pushToStore, ISink _innerSink)
         {
-            var enumerable = queue.GetConsumingEnumerable();
-            var logBatch = enumerable.ToList();
-            if (logBatch.Count < 1)
+            if (queue.Count < 1)
             {
                 return;
+            }
+
+            var logBatch = new List<LogEvent>();
+            while (queue.Count != 0)
+            {
+                logBatch.Add(queue.Take());
             }
 
             try
