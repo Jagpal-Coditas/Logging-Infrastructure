@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Logging.Common
 {
@@ -6,6 +7,7 @@ namespace Logging.Common
     {
         string AppName { get; }
         string Environment { get; }
+        LogLevel MinLogLevel { get; set; }
         ICollection<ISink> Sink { get; }
     }
 }

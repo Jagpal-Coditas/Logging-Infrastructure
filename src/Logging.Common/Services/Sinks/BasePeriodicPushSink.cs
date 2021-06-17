@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,14 @@ namespace Logging.Common.Services
         private bool _isTaskScheduled = false;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public BasePeriodicPushSink(ISink innerSink)
+        //public BasePeriodicPushSink(ISink innerSink)
+        //{
+        //    _innerSink = innerSink;
+        //}
+
+        public BasePeriodicPushSink()
         {
-            _innerSink = innerSink;
+            _innerSink = null;
         }
 
         public virtual BlockingCollection<LogEvent> Queue
@@ -137,24 +143,13 @@ namespace Logging.Common.Services
 
         private static LogEvent GetQueueStatsLog(int queueInUse, LogEvent referenceLog)
         {
-            return new LogEvent
-            {
-                AppName = referenceLog.AppName,
-                Environment = referenceLog.Environment,
-                Message = string.Format("Queue stats : Occupied capacity {0}%", queueInUse),
-                Level = "High"
-            };
+            return LogEvent.Create(referenceLog.AppName, referenceLog.Environment, LogLevel.Critical, string.Format("Queue stats : Occupied capacity {0}%", queueInUse));
+            // add more stats to understand system status.
         }
 
         private static LogEvent GetExceptionLog(Exception e, LogEvent referenceLog)
         {
-            return new LogEvent
-            {
-                AppName = referenceLog.AppName,
-                Environment = referenceLog.Environment,
-                Exception = e.Message + e.StackTrace,
-                Level = "High"
-            };
+            return LogEvent.Create(referenceLog.AppName, referenceLog.Environment, LogLevel.Critical, e.Message + e.StackTrace);
         }
 
         public void Dispose()

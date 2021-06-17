@@ -1,19 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Logging.Common
 {
     internal class ApplicationLogger : ILogger
     {
         private readonly ApplicationLoggerProvider _loggerProvider;
-
-        public ApplicationLogger(ApplicationLoggerProvider loggerProvider)
+        private readonly string _sourceContext;
+        public ApplicationLogger(ApplicationLoggerProvider loggerProvider, string categoryName)
         {
             _loggerProvider = loggerProvider;
+            _sourceContext = categoryName;
         }
         public IDisposable BeginScope<TState>(TState state)
         {
@@ -22,7 +20,7 @@ namespace Logging.Common
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return logLevel != LogLevel.None;
+            return logLevel != LogLevel.None && (int)logLevel >= (int)_loggerProvider.Options.MinLogLevel;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -31,26 +29,11 @@ namespace Logging.Common
             {
                 return;
             }
-            var logEvent = new LogEvent();
-            try
-            {
 
-                logEvent = GetLogEvent(logLevel, eventId, state, exception, formatter);
-                var logSinks = _loggerProvider.Options.Sink.Where(s => s.IsFailOverSink == false);
-                foreach (var logSink in logSinks)
-                {
-                    logSink.Push(logEvent);
-                }
-            }
-            catch (Exception ex)
+            var logEvent = GetLogEvent(logLevel, eventId, state, exception, formatter);
+            foreach (var logSink in _loggerProvider.Options.Sink)
             {
-                logEvent.LoggerException = ex.StackTrace;
-                logEvent.LoggerExceptionMessage = ex.Message;
-                var failOverSink = _loggerProvider.Options.Sink.Where(s => s.IsFailOverSink).FirstOrDefault();
-                if (failOverSink != null)
-                {
-                    failOverSink.Push(logEvent);
-                }
+                logSink.Push(logEvent);
             }
 
         }
@@ -59,7 +42,8 @@ namespace Logging.Common
             var isApiLog = false;
             var logMessage = string.Format("{0} {1}", level.ToString(), formatter(state, exception));
 
-            var logEvent = new LogEvent(_loggerProvider.Options.AppName, _loggerProvider.Options.Environment, level.ToString(), logMessage);
+            var logEvent = LogEvent.Create(_loggerProvider.Options.AppName, _loggerProvider.Options.Environment, level, logMessage);
+            logEvent.SourceContext = _sourceContext;
             string messageTemplate = null;
             if (state is IEnumerable<KeyValuePair<string, object>> structure)
             {
@@ -74,7 +58,7 @@ namespace Logging.Common
                         isApiLog = property.Value is ApiLog;
 
                         if (property.Value != null)
-                            FlattenObjectAndAddProperties(logEvent.Properties, property.Value);
+                            logEvent.Properties.AddIfNotNullEmpty(property.Key.Substring(1), property.Value);
                     }
                     else
                     {
@@ -86,7 +70,7 @@ namespace Logging.Common
             //LogException 
             if (exception != null)
             {
-                logEvent.Exception = exception.StackTrace;
+                logEvent.Exception = exception;
             }
 
             if (_loggerProvider.CurrentContextService != null)
@@ -97,15 +81,6 @@ namespace Logging.Common
                 }
             }
             return logEvent;
-        }
-        void FlattenObjectAndAddProperties(IDictionary<string, object> propertiesList, object obj)
-        {
-            var jObject = JObject.Parse(JsonConvert.SerializeObject(obj));
-            var flatObj = jObject.Flatten(false);
-            foreach (var item in flatObj)
-            {
-                propertiesList.AddIfNotNullEmpty(item.Key, item.Value);
-            }
         }
     }
 }

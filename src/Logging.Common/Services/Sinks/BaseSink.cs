@@ -4,13 +4,14 @@ namespace Logging.Common.Services
 {
     public abstract class BaseSink : ISink
     {
+        public abstract ILogEventFormatter LogFormatter { get; }
         public abstract bool IsFailOverSink { get; }
 
         public abstract bool IsPrioritySink { get; }
         
         private bool IsSinkEligible(LogEvent logEvent)
         {
-            return logEvent.Level == "High" && IsPrioritySink;
+            return logEvent.Level != Microsoft.Extensions.Logging.LogLevel.Critical || (logEvent.Level == Microsoft.Extensions.Logging.LogLevel.Critical && IsPrioritySink);
         }
 
         public void Push(LogEvent logEvent)

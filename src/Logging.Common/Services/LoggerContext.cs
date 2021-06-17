@@ -18,7 +18,7 @@ namespace Logging.Common
             if (IsMiddlewareLogging)
                 return _loggingData;
 
-            return _loggingData.Where(prop => prop.IsCommonLog == false);
+            return _loggingData.Where(prop => prop.IsCommonLog);
         }
 
     }

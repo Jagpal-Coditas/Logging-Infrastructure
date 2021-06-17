@@ -90,6 +90,15 @@ namespace Logging.Common
             return builder.ToString();
         }
 
+        public static bool IsPrimitiveType(this object value)
+        {
+            if (value == null)
+                return false;
+
+            var type = value.GetType();
+            return type.Namespace == "System" || type.Namespace.StartsWith("System");
+        }
+
     }
 
 }
