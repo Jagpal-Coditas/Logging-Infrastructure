@@ -25,8 +25,6 @@ namespace Logging.Common
             Message = message;
         }
 
-        public bool IsHighPriority { get; set; }
-
         [JsonProperty("log_time")]
         public DateTime LogTime { get; set; }
 
