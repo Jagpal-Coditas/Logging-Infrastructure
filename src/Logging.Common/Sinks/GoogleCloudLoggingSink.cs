@@ -3,14 +3,16 @@ using Google.Api.Gax.Grpc;
 using Google.Cloud.Logging.Type;
 using Google.Cloud.Logging.V2;
 using Google.Protobuf.WellKnownTypes;
-using Logging.Common;
+using Logging.Abstraction.Configuration;
+using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MsLogging = Microsoft.Extensions.Logging;
-namespace Logging.Net45
+namespace Logging.Common
 {
-    public class GoogleCloudLoggingSink : ISink
+    public class GoogleCloudLoggingSink : ISinkService
     {
         private readonly IGoogleCloudLoggingSinkOptions _loggingSinkOptions;
         private readonly LoggingServiceV2Client _client;
@@ -19,7 +21,7 @@ namespace Logging.Net45
         private string _logName;
         private static readonly Dictionary<string, string> LogNameCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private static readonly Regex LogNameUnsafeChars = new Regex("[^0-9A-Z._/-]+", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-        public GoogleCloudLoggingSink(IGoogleCloudLoggingSinkOptions loggingSinkOptions, ILogEventFormatter logEventFormatter)
+        public GoogleCloudLoggingSink(IGoogleCloudLoggingSinkOptions loggingSinkOptions, ILogEventFormatterService logEventFormatter)
         {
             if (loggingSinkOptions == null)
                 throw new ArgumentNullException(typeof(IGoogleCloudLoggingSinkOptions).FullName);
@@ -46,9 +48,9 @@ namespace Logging.Net45
                 : LoggingServiceV2Client.Create();
         }
 
-        public ISink FailOverSink { get; }
+        public ISinkService FailOverSink { get; }
 
-        public ILogEventFormatter LogFormatter { get; }
+        public ILogEventFormatterService LogFormatter { get; }
 
         public void Send(LogEvent logEvent)
         {
@@ -119,8 +121,8 @@ namespace Logging.Net45
             }
 
             log.JsonPayload = jsonPayload;
+            _client.WriteLogEntries(log.LogName, _resource, _loggingSinkOptions.Labels, new LogEntry[] { log });
 
-            _client.WriteLogEntries(log.LogNameAsLogNameOneof, _resource, _loggingSinkOptions.Labels, new LogEntry[] { log });
         }
 
         public Value ConvertToWellKnowType(object propValue)

@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
+using System.Collections.Generic;
 
-namespace Logging.Common
+namespace Logging.Common.Services
 {
-    public class SnakeCaseFormatter : BaseLogEventFormatter
+    public class SnakeCaseFormatterService : BaseLogEventFormatterService
     {
-        public SnakeCaseFormatter()
+        public SnakeCaseFormatterService()
         {
 
         }
-        public SnakeCaseFormatter(ILogEventFormatter logEventFormatter) : base(logEventFormatter)
+        public SnakeCaseFormatterService(ILogEventFormatterService logEventFormatter) : base(logEventFormatter)
         {
         }
         protected override LogEvent DoFormatting(LogEvent logEvent)

@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Logging.Abstraction.Configuration;
+using Logging.Abstraction.Services;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Logging.Common
+namespace Logging.Common.Configurations
 {
     public class ApplicationLoggerOptions : IApplicationLoggerOptions
     {
@@ -19,14 +20,16 @@ namespace Logging.Common
             Environment = environment;
             MinLogLevel = minLogLevel;
         }
-        private ApplicationLoggerOptions(string appName, string environment, LogLevel minLogLevel, ICollection<ISink> sinks) : this(appName, environment, minLogLevel)
+        private ApplicationLoggerOptions(string appName, string environment, LogLevel minLogLevel, ICollection<ISinkService> sinks) : this(appName, environment, minLogLevel)
         {
             if (sinks == null || sinks.Count == 0)
                 throw new ArgumentException("No sink added");
 
             Sink = sinks;
         }
-        public ICollection<ISink> Sink { get; }
+
+        public const string LoggerOptions = "logger";
+        public ICollection<ISinkService> Sink { get; }
         public string AppName { get; }
         public string Environment { get; }
         public LogLevel MinLogLevel { get; set; }
@@ -35,7 +38,7 @@ namespace Logging.Common
             return new ApplicationLoggerOptions(appName, environment, minLogLevel);
         }
 
-        public static IApplicationLoggerOptions Create(string appName, string environment, LogLevel minLogLevel, ICollection<ISink> sinks)
+        public static IApplicationLoggerOptions Create(string appName, string environment, LogLevel minLogLevel, ICollection<ISinkService> sinks)
         {
             return new ApplicationLoggerOptions(appName, environment, minLogLevel, sinks);
         }

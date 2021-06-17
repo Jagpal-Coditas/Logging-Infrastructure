@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Logging.Abstraction.Configuration;
+using System.Collections.Generic;
 
-namespace Logging.Net45
+namespace Logging.Common.Configurations
 {
     public class GoogleCloudLoggingSinkOptions : IGoogleCloudLoggingSinkOptions
     {
+        public const string GcpLoggingOptions = "gcplogging";
         public string ProjectId { get; set; }
 
         public string ResourceType { get; set; }

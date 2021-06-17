@@ -1,4 +1,6 @@
-﻿using Logging.Common;
+﻿using Logging.Abstraction.Models;
+using Logging.Abstraction.Services;
+using Logging.Common;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -73,7 +75,7 @@ namespace TestWithDotnetFramework
                 userSessionId = actionContext.HttpContext.Session.SessionID;
                 origin = actionContext.HttpContext.Request.Url.ToString();
             }
-            var _loggerContext = DependencyResolver.Current.GetService<ILoggerContext>();
+            var _loggerContext = DependencyResolver.Current.GetService<ILoggerContextService>();
             _loggerContext.Set(LogContextProperty.Create(Constants.CORRELATIONID,
                   actionContext.HttpContext.Request.Headers.Get(Constants.HttpHeaders.CORRELATIONIDHEADER),
                   true));

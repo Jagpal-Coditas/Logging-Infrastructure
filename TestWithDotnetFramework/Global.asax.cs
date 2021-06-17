@@ -1,7 +1,10 @@
 ﻿using Autofac;
 using Autofac.Integration.Mvc;
+using Logging.Abstraction.Configuration;
+using Logging.Abstraction.Services;
 using Logging.Common;
-using Logging.Net45;
+using Logging.Common.Configurations;
+using Logging.Common.Services;
 using Microsoft.Extensions.Logging;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -21,12 +24,12 @@ namespace TestWithDotnetFramework
 
 
             builder.RegisterType<CurrentContextService>().As<ICurrentContextService>().InstancePerLifetimeScope();
-            builder.RegisterType<LoggerContext>().As<ILoggerContext>().InstancePerLifetimeScope();
+            builder.RegisterType<ILoggerContextService>().As<ILoggerContextService>().InstancePerLifetimeScope();
 
             builder.Register(c =>
             {
-                return new SnakeCaseFormatter(new FlatenObjectFormatter());
-            }).As<ILogEventFormatter>().SingleInstance();
+                return new SnakeCaseFormatterService(new FlatenObjectFormatterService());
+            }).As<ILogEventFormatterService>().SingleInstance();
 
 
             builder.Register(c =>
@@ -35,12 +38,12 @@ namespace TestWithDotnetFramework
             }).As<IGoogleCloudLoggingSinkOptions>().SingleInstance();
 
 
-            builder.RegisterType<GoogleCloudLoggingSink>().As<ISink>().InstancePerLifetimeScope();
+            builder.RegisterType<GoogleCloudLoggingSink>().As<ISinkService>().SingleInstance();
 
             builder.Register(c =>
             {
-                var sinks = new System.Collections.Generic.List<ISink>();
-                sinks.Add(c.Resolve<ISink>());
+                var sinks = new System.Collections.Generic.List<ISinkService>();
+                sinks.Add(c.Resolve<ISinkService>());
                 return ApplicationLoggerOptions.Create("ConnectAndSell", "QA", LogLevel.Information, sinks);
             }).As<IApplicationLoggerOptions>().SingleInstance();
 
@@ -48,7 +51,7 @@ namespace TestWithDotnetFramework
             builder.Register(sc =>
             {
                 var lf = new LoggerFactory();
-                lf.AddProvider(new ApplicationLoggerProvider(sc.Resolve<IApplicationLoggerOptions>(), sc.Resolve<ICurrentContextService>()));
+                lf.AddProvider(new ApplicationLoggerProviderService(sc.Resolve<IApplicationLoggerOptions>(), sc.Resolve<ICurrentContextService>()));
                 return lf;
             }).As<ILoggerFactory>().InstancePerLifetimeScope();
 

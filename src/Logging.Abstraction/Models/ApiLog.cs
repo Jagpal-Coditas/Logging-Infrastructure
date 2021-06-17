@@ -1,4 +1,4 @@
-﻿namespace Logging.Common
+﻿namespace Logging.Abstraction.Models
 {
     /// <summary>
     /// Common logging fields to log an API endpoint communication. Indicating developers to log these fields.
