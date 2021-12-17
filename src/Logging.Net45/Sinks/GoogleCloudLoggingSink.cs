@@ -4,13 +4,14 @@ using Google.Cloud.Logging.Type;
 using Google.Cloud.Logging.V2;
 using Google.Protobuf.WellKnownTypes;
 using Logging.Common;
+using Logging.Common.Services;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MsLogging = Microsoft.Extensions.Logging;
 namespace Logging.Net45
 {
-    public class GoogleCloudLoggingSink : ISink
+    public class GoogleCloudLoggingSink : BasePeriodicPushSink
     {
         private readonly IGoogleCloudLoggingSinkOptions _loggingSinkOptions;
         private readonly LoggingServiceV2Client _client;
@@ -46,9 +47,11 @@ namespace Logging.Net45
                 : LoggingServiceV2Client.Create();
         }
 
-        public ISink FailOverSink { get; }
+        public override ILogEventFormatter LogFormatter { get; }
 
-        public ILogEventFormatter LogFormatter { get; }
+        public bool IsPrioritySink { get { return false; } }
+
+        public bool IsFailOverSink { get { return true; } }
 
         public void Send(LogEvent logEvent)
         {
@@ -167,6 +170,12 @@ namespace Logging.Net45
             return logName;
         }
 
-
+        protected override void PushToStore(IEnumerable<LogEvent> logBatch)
+        {
+            foreach (var log in logBatch)
+            {
+                Send(log);
+            }
+        }
     }
 }

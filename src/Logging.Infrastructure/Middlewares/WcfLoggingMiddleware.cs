@@ -1,5 +1,4 @@
 ﻿using Logging.Common;
-using Logging.Infrastructure.Helpers;
 using System;
 using System.Diagnostics;
 using System.ServiceModel;
@@ -51,7 +50,8 @@ namespace Logging.Infrastructure.Middlewares
 
         private string GetCorrelationIdFromHeader(Message request, string ns)
         {
-            return HeaderHelper.GetHeaderIfPresent(request.Headers, ns, Constants.HttpHeaders.CORRELATIONIDHEADER);
+            return string.Empty;
+            //return HeaderHelper.GetHeaderIfPresent(request.Headers, ns, Constants.HttpHeaders.CORRELATIONIDHEADER);
         }
 
         private MessageHeader GetCorrelationHeader(string ns, string correlationId)

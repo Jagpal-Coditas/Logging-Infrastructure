@@ -30,7 +30,7 @@ namespace TestWithDotnetFramework
             var controllerName = actionDescriptor.ControllerDescriptor.ControllerName;
             var statusCode = filterContext.HttpContext.Response.StatusCode;
             var _logger = DependencyResolver.Current.GetService<ILogger<TestLogging>>();
-            _logger.LogInformation("REQUEST PROCESSED, CONTROLLER:{Controller}, ACTION: {Action}, RESPONSE TIME IS {ResponseTime}ms,StatusCode:{StatusCode},{IsLoggedFromMiddleware}", controllerName, actionName, timeElapsed, statusCode, true);
+            _logger.LogInformation("Mahesh : REQUEST PROCESSED, CONTROLLER:{Controller}, ACTION: {Action}, RESPONSE TIME IS {ResponseTime}ms,StatusCode:{StatusCode},{IsLoggedFromMiddleware}", controllerName, actionName, timeElapsed, statusCode, true);
             _logger.LogInformation("Api log {@Apilog}", new ApiLog()
             {
                 Api = controllerName,

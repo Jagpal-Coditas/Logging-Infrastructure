@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using MsLogging = Microsoft.Extensions.Logging;
 namespace Logging.Common
 {
-    public class GoogleCloudLoggingSink : ISinkService
+    public class GoogleCloudLoggingSink : BasePeriodicPushSink
     {
         private readonly IGoogleCloudLoggingSinkOptions _loggingSinkOptions;
         private readonly LoggingServiceV2Client _client;
@@ -21,12 +21,11 @@ namespace Logging.Common
         private string _logName;
         private static readonly Dictionary<string, string> LogNameCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private static readonly Regex LogNameUnsafeChars = new Regex("[^0-9A-Z._/-]+", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-        public GoogleCloudLoggingSink(IGoogleCloudLoggingSinkOptions loggingSinkOptions, ILogEventFormatterService logEventFormatter)
+        public GoogleCloudLoggingSink(IGoogleCloudLoggingSinkOptions loggingSinkOptions, ISinkService failOverSink, ILogEventFormatterService logEventFormatterService) : base(failOverSink, logEventFormatterService)
         {
             if (loggingSinkOptions == null)
                 throw new ArgumentNullException(typeof(IGoogleCloudLoggingSinkOptions).FullName);
 
-            LogFormatter = logEventFormatter;
             _loggingSinkOptions = loggingSinkOptions;
 
             _resource = MonitoredResourceBuilder.FromPlatform();
@@ -48,16 +47,13 @@ namespace Logging.Common
                 : LoggingServiceV2Client.Create();
         }
 
-        public ISinkService FailOverSink { get; }
-
-        public ILogEventFormatterService LogFormatter { get; }
-
-        public void Send(LogEvent logEvent)
+        public void Push(LogEvent logEvent)
         {
             if (LogFormatter != null)
                 logEvent = LogFormatter.Format(logEvent);
             WriteLogEntry(logEvent);
         }
+
         private static LogSeverity TranslateSeverity(MsLogging.LogLevel level)
         {
             LogSeverity logSeverity;
@@ -169,6 +165,12 @@ namespace Logging.Common
             return logName;
         }
 
-
+        protected override void PushToStore(IEnumerable<LogEvent> logBatch)
+        {
+            foreach(var log in logBatch)
+            {
+                Push(log);
+            }
+        }
     }
 }
