@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+		<RootNamespace>Logging.Common</RootNamespace>
+		<AssemblyName>Logging.Common</AssemblyName>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
+		<DefineConstants>NETSTANDARD2_0</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net45'">
+		<DefineConstants>NET45</DefineConstants>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Remove="Platforms\**\*.cs" />
+		<None Include="Platforms\**\*.cs" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
+		<PackageReference Include="Google.Cloud.Logging.V2" Version="2.3.0" />
+		<Compile Incude="Platforms\Net45\**\*.cs" Remove="Platforms\NetCore\**\*.cs" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Google.Cloud.Logging.V2" Version="3.3.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+		<Compile Incude="Platforms\NetCore\**\*.cs" Remove="Platforms\Net45\**\*.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Sinks\GoogleCloudLoggingSink.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Formatters\" />
+	  <Folder Include="Platforms\Net45\" />
+	  <Folder Include="Platforms\NetCore\" />
+	</ItemGroup>
+	
+</Project>

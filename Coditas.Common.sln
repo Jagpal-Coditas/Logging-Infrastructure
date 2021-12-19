@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coditas.Common.Logging", "src\Coditas.Common.Logging\Coditas.Common.Logging.csproj", "{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coditas.Common.Web", "src\Coditas.Common.Web\Coditas.Common.Web.csproj", "{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{392C2FFA-621D-4C9A-85B0-0CBA9DBBD4DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EF5F69B-6311-40BE-9FB5-A05CCBB958E8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {573431AF-F83A-4540-92EB-4D9736D2C021}
+	EndGlobalSection
+EndGlobal
